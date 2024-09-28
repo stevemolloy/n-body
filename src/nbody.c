@@ -17,37 +17,14 @@ typedef struct {
   double mass;
 } Particle;
 
-Vector3d vector3_scale(double scale, Vector3d vect) {
-  return (Vector3d) {
-    .x = vect.x * scale,
-    .y = vect.y * scale,
-    .z = vect.z * scale
-  };
-}
-
-Vector3d vector3_add(Vector3d a, Vector3d b) {
-  return (Vector3d) {
-    .x = a.x + b.x,
-    .y = a.y + b.y,
-    .z = a.z + b.z
-  };
-}
-
-Vector3d vector3_diff(Vector3d a, Vector3d b) {
-  return (Vector3d) {
-    .x = a.x - b.x,
-    .y = a.y - b.y,
-    .z = a.z - b.z
-  };
-}
-
-inline double vector3_length(Vector3d vect) {
-  return sqrtf(vect.x*vect.x + vect.y*vect.y + vect.z*vect.z);
-}
+#define VECTOR3D_SCALE(S, V) (Vector3d) { .x=(S)*(V).x, .y=(S)*(V).y, .z=(S)*(V).z }
+#define VECTOR3D_ADD(A, B) (Vector3d) { .x=(A).x+(B).x, .y=(A).y+(B).y, .z=(A).z+(B).z}
+#define VECTOR3D_DIFF(A, B) (Vector3d) { .x=(A).x-(B).x, .y=(A).y-(B).y, .z=(A).z-(B).z}
+#define VECTOR3D_LENGTH(V) sqrtf((V).x*(V).x + (V).y*(V).y + (V).z*(V).z)
 
 int main(void) {
   InitWindow(WIDTH, HEIGHT, "N-body problem");
-  // SetTargetFPS(60);
+  SetTargetFPS(60);
 
   const double mass_ratio = 2.0;
   const double vel = 2.0;
@@ -74,25 +51,27 @@ int main(void) {
 
   while (!WindowShouldClose()) {
     double dt = GetFrameTime();
-    m1.mass *= 1.000025;
-    m2.mass /= 1.000025;
     
-    Vector3d m1_force_vector = vector3_diff(m2.position, m1.position);
-    Vector3d m2_force_vector = vector3_scale(-1.0, m1_force_vector);
-    double r = vector3_length(m1_force_vector);
+    Vector3d m1_force_vector = VECTOR3D_DIFF(m2.position, m1.position);
+    Vector3d m2_force_vector = VECTOR3D_SCALE(-1.0, m1_force_vector);
+    double r = VECTOR3D_LENGTH(m1_force_vector);
     double inverse_r = 1 / r;
 
     double m1_acceleration_delta = m2.mass / (r*r);
     double m2_acceleration_delta = m1.mass / (r*r);
 
-    m1.acceleration = vector3_scale(m1_acceleration_delta*inverse_r, m1_force_vector);
-    m2.acceleration = vector3_scale(m2_acceleration_delta*inverse_r, m2_force_vector);
+    m1.acceleration = VECTOR3D_SCALE(m1_acceleration_delta*inverse_r, m1_force_vector);
+    m2.acceleration = VECTOR3D_SCALE(m2_acceleration_delta*inverse_r, m2_force_vector);
 
-    m1.velocity = vector3_add(m1.velocity, vector3_scale(dt, m1.acceleration));
-    m2.velocity = vector3_add(m2.velocity, vector3_scale(dt, m2.acceleration));
+    // m1.velocity = vector3_add(m1.velocity, vector3_scale(dt, m1.acceleration));
+    m1.velocity = VECTOR3D_ADD(m1.velocity, VECTOR3D_SCALE(dt, m1.acceleration));
+    // m2.velocity = vector3_add(m2.velocity, VECTOR3D_SCALE(dt, m2.acceleration));
+    m2.velocity = VECTOR3D_ADD(m2.velocity, VECTOR3D_SCALE(dt, m2.acceleration));
 
-    m1.position = vector3_add(m1.position, vector3_scale(dt, m1.velocity));
-    m2.position = vector3_add(m2.position, vector3_scale(dt, m2.velocity));
+    // m1.position = vector3_add(m1.position, VECTOR3D_SCALE(dt, m1.velocity));
+    m1.position = VECTOR3D_ADD(m1.position, VECTOR3D_SCALE(dt, m1.velocity));
+    // m2.position = vector3_add(m2.position, VECTOR3D_SCALE(dt, m2.velocity));
+    m2.position = VECTOR3D_ADD(m2.position, VECTOR3D_SCALE(dt, m2.velocity));
 
     // DrawLine(m2.position.x, m2.position.y, m2.position.x+(50*m2_force_vector.x) , m2.position.y+(50*m2_force_vector.y), WHITE);
 
