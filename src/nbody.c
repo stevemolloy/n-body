@@ -21,9 +21,9 @@ typedef struct {
 } Particle;
 
 #define VECTOR3D_SCALE(S, V) (Vector3d) { .x=(S)*(V).x, .y=(S)*(V).y, .z=(S)*(V).z }
-#define VECTOR3D_ADD(A, B) (Vector3d) { .x=(A).x+(B).x, .y=(A).y+(B).y, .z=(A).z+(B).z}
-#define VECTOR3D_DIFF(A, B) (Vector3d) { .x=(A).x-(B).x, .y=(A).y-(B).y, .z=(A).z-(B).z}
-#define VECTOR3D_LENGTH(V) sqrtf((V).x*(V).x + (V).y*(V).y + (V).z*(V).z)
+#define VECTOR3D_ADD(A, B)   (Vector3d) { .x=(A).x+(B).x, .y=(A).y+(B).y, .z=(A).z+(B).z}
+#define VECTOR3D_DIFF(A, B)  (Vector3d) { .x=(A).x-(B).x, .y=(A).y-(B).y, .z=(A).z-(B).z}
+#define VECTOR3D_LENGTH(V)   sqrtf((V).x*(V).x + (V).y*(V).y + (V).z*(V).z)
 
 int main(void) {
   InitWindow(WIDTH, HEIGHT, "N-body problem");
@@ -51,10 +51,6 @@ int main(void) {
   long double radii[NUM_PARTICLES] = {0};
 
   Vector3d trail[2][TRAIL_LENGTH] = {0};
-
-  BeginDrawing();
-  ClearBackground(BLACK);
-  EndDrawing();
 
   size_t counter = 0;
   while (!WindowShouldClose()) {
