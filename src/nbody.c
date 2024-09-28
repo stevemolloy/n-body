@@ -1,9 +1,12 @@
 #include <math.h>
+#include <stdio.h>
 
 #include "raylib.h"
 
 #define WIDTH 800
 #define HEIGHT 600
+
+#define TRAIL_LENGTH 1000
 
 typedef struct {
   double x, y, z;
@@ -45,11 +48,16 @@ int main(void) {
     .acceleration = (Vector3d) {0, 0, 0},
   };
 
+  Vector3d trail[TRAIL_LENGTH] = {0};
+
   BeginDrawing();
   ClearBackground(BLACK);
   EndDrawing();
 
+  size_t counter = 0;
   while (!WindowShouldClose()) {
+    counter = (counter + 1) % TRAIL_LENGTH;
+    trail[counter] = m2.position;
     double dt = GetFrameTime();
     
     Vector3d m1_force_vector = VECTOR3D_DIFF(m2.position, m1.position);
@@ -76,9 +84,12 @@ int main(void) {
     // DrawLine(m2.position.x, m2.position.y, m2.position.x+(50*m2_force_vector.x) , m2.position.y+(50*m2_force_vector.y), WHITE);
 
     BeginDrawing();
-    // ClearBackground(BLACK);
-    DrawRectangle(0, 0, 100, 20, BLACK);
+    ClearBackground(BLACK);
+    // DrawRectangle(0, 0, 100, 20, BLACK);
     DrawFPS(0, 0);
+    for (size_t i=0; i<TRAIL_LENGTH; i++) {
+      DrawCircle(trail[i].x, trail[i].y, m1.radius, WHITE);
+    }
     DrawCircle(m1.position.x, m1.position.y, m1.radius, WHITE);
     DrawCircle(m2.position.x, m2.position.y, m2.radius, WHITE);
     EndDrawing();
