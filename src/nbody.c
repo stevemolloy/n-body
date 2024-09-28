@@ -48,7 +48,7 @@ int main(void) {
     .acceleration = (Vector3d) {0, 0, 0},
   };
 
-  Vector3d trail[TRAIL_LENGTH] = {0};
+  Vector3d trail[2][TRAIL_LENGTH] = {0};
 
   BeginDrawing();
   ClearBackground(BLACK);
@@ -57,7 +57,8 @@ int main(void) {
   size_t counter = 0;
   while (!WindowShouldClose()) {
     counter = (counter + 1) % TRAIL_LENGTH;
-    trail[counter] = m2.position;
+    trail[0][counter] = m1.position;
+    trail[1][counter] = m2.position;
     double dt = GetFrameTime();
     
     Vector3d m1_force_vector = VECTOR3D_DIFF(m2.position, m1.position);
@@ -88,7 +89,8 @@ int main(void) {
     // DrawRectangle(0, 0, 100, 20, BLACK);
     DrawFPS(0, 0);
     for (size_t i=0; i<TRAIL_LENGTH; i++) {
-      DrawCircle(trail[i].x, trail[i].y, m1.radius, WHITE);
+      DrawCircle(trail[0][i].x, trail[0][i].y, m1.radius, WHITE);
+      DrawCircle(trail[1][i].x, trail[1][i].y, m2.radius, WHITE);
     }
     DrawCircle(m1.position.x, m1.position.y, m1.radius, WHITE);
     DrawCircle(m2.position.x, m2.position.y, m2.radius, WHITE);
