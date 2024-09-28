@@ -6,6 +6,7 @@
 #define WIDTH 800
 #define HEIGHT 600
 
+#define NUM_PARTICLES 2
 #define TRAIL_LENGTH 500
 
 typedef struct {
@@ -31,7 +32,7 @@ int main(void) {
   const long double mass_ratio = 3.0;
   const long double vel = 2.0;
 
-  Particle particles[2] = {
+  Particle particles[NUM_PARTICLES] = {
     {
       .mass = 10000 * mass_ratio,
       .position = (Vector3d) {GetRenderWidth()/2.0, GetRenderHeight()/2.0, 0},
@@ -45,6 +46,9 @@ int main(void) {
       .acceleration = (Vector3d) {0, 0, 0},
     }
   };
+  long double acceleration_deltas[NUM_PARTICLES] = {0};
+  Vector3d force_vectors[NUM_PARTICLES] = {0};
+  long double radii[NUM_PARTICLES] = {0};
 
   Vector3d trail[2][TRAIL_LENGTH] = {0};
 
@@ -59,21 +63,19 @@ int main(void) {
     trail[1][counter] = particles[1].position;
     long double dt = GetFrameTime();
     
-    Vector3d m1_force_vector = VECTOR3D_DIFF(particles[1].position, particles[0].position);
-    Vector3d m2_force_vector = VECTOR3D_SCALE(-1.0, m1_force_vector);
-    long double r = VECTOR3D_LENGTH(m1_force_vector);
+    force_vectors[0] = VECTOR3D_DIFF(particles[1].position, particles[0].position);
+    force_vectors[1] = VECTOR3D_DIFF(particles[0].position, particles[1].position);
+    radii[0] = VECTOR3D_LENGTH(force_vectors[0]);
+    radii[1] = VECTOR3D_LENGTH(force_vectors[1]);
 
-    long double m1_acceleration_delta = particles[1].mass / (r*r*r);
-    long double m2_acceleration_delta = particles[0].mass / (r*r*r);
+    acceleration_deltas[0] = particles[1].mass / (radii[0]*radii[0]*radii[0]);
+    acceleration_deltas[1] = particles[0].mass / (radii[1]*radii[1]*radii[1]);
 
-    particles[0].acceleration = VECTOR3D_SCALE(m1_acceleration_delta, m1_force_vector);
-    particles[1].acceleration = VECTOR3D_SCALE(m2_acceleration_delta, m2_force_vector);
-
-    particles[0].velocity = VECTOR3D_ADD(particles[0].velocity, VECTOR3D_SCALE(dt, particles[0].acceleration));
-    particles[1].velocity = VECTOR3D_ADD(particles[1].velocity, VECTOR3D_SCALE(dt, particles[1].acceleration));
-
-    particles[0].position = VECTOR3D_ADD(particles[0].position, VECTOR3D_SCALE(dt, particles[0].velocity));
-    particles[1].position = VECTOR3D_ADD(particles[1].position, VECTOR3D_SCALE(dt, particles[1].velocity));
+    for (size_t i=0; i<NUM_PARTICLES; i++) {
+      particles[i].acceleration = VECTOR3D_SCALE(acceleration_deltas[i], force_vectors[i]);
+      particles[i].velocity = VECTOR3D_ADD(particles[i].velocity, VECTOR3D_SCALE(dt, particles[i].acceleration));
+      particles[i].position = VECTOR3D_ADD(particles[i].position, VECTOR3D_SCALE(dt, particles[i].velocity));
+    }
 
     BeginDrawing();
     ClearBackground(BLACK);
