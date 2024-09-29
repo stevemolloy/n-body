@@ -6,8 +6,8 @@
 #define WIDTH 1000
 #define HEIGHT 800
 
-#define NUM_PARTICLES 6
-#define TRAIL_LENGTH 500
+#define NUM_PARTICLES 7
+#define TRAIL_LENGTH 200
 
 typedef struct {
   long double x, y;
@@ -45,7 +45,7 @@ int main(void) {
   InitWindow(WIDTH, HEIGHT, "N-body problem");
   SetTargetFPS(100);
 
-  float part_rad[NUM_PARTICLES] = {10, 2, 2, 2, 2, 2};
+  float part_rad[NUM_PARTICLES] = {10, 2, 2, 2, 2, 2, 2};
   Particle particles[NUM_PARTICLES] = {
     {
       .mass = 1000*1000,
@@ -54,31 +54,37 @@ int main(void) {
       .acceleration = (Vector2d) {0, 0},
     },
     {
-      .mass = 10000,
+      .mass = 1000,
       .position = (Vector2d) {GetRenderWidth()/2.0, GetRenderHeight()/2.0 - 50},
       .velocity = (Vector2d) {-140, 0},
       .acceleration = (Vector2d) {0, 0},
     },
     {
-      .mass = 10000,
+      .mass = 1000,
+      .position = (Vector2d) {GetRenderWidth()/2.0, GetRenderHeight()/2.0 - 75},
+      .velocity = (Vector2d) {-140/sqrt(1.5), 0},
+      .acceleration = (Vector2d) {0, 0},
+    },
+    {
+      .mass = 1000,
       .position = (Vector2d) {GetRenderWidth()/2.0, GetRenderHeight()/2.0 + 100},
       .velocity = (Vector2d) {140/sqrt(2.0), 0},
       .acceleration = (Vector2d) {0, 0},
     },
     {
-      .mass = 10000,
+      .mass = 1000,
       .position = (Vector2d) {GetRenderWidth()/2.0, GetRenderHeight()/2.0 + 150},
       .velocity = (Vector2d) {140/sqrtf(3.0), 0},
       .acceleration = (Vector2d) {0, 0},
     },
     {
-      .mass = 10000,
+      .mass = 1000,
       .position = (Vector2d) {GetRenderWidth()/2.0, GetRenderHeight()/2.0 + 200},
       .velocity = (Vector2d) {140/2.0, 0},
       .acceleration = (Vector2d) {0, 0},
     },
     {
-      .mass = 10000,
+      .mass = 1000,
       .position = (Vector2d) {GetRenderWidth()/2.0, GetRenderHeight()/2.0 + 400},
       .velocity = (Vector2d) {140/2.0/sqrtf(2.0), 0},
       .acceleration = (Vector2d) {0, 0},
