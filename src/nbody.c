@@ -6,8 +6,8 @@
 #define WIDTH 1000
 #define HEIGHT 800
 
-#define NUM_PARTICLES 7
-#define TRAIL_LENGTH 200
+#define NUM_PARTICLES 8
+#define TRAIL_LENGTH 1000
 
 typedef struct {
   long double x, y;
@@ -43,9 +43,9 @@ void zero_momentum(Particle *particles, size_t count) {
 
 int main(void) {
   InitWindow(WIDTH, HEIGHT, "N-body problem");
-  SetTargetFPS(100);
+  // SetTargetFPS(100);
 
-  float part_rad[NUM_PARTICLES] = {10, 2, 2, 2, 2, 2, 2};
+  float part_rad[NUM_PARTICLES] = {10, 4, 4, 4, 4, 4, 1, 4};
   Particle particles[NUM_PARTICLES] = {
     {
       .mass = 1000*1000,
@@ -55,14 +55,14 @@ int main(void) {
     },
     {
       .mass = 1000,
-      .position = (Vector2d) {GetRenderWidth()/2.0, GetRenderHeight()/2.0 - 50},
-      .velocity = (Vector2d) {-140, 0},
+      .position = (Vector2d) {GetRenderWidth()/2.0, GetRenderHeight()/2.0 + 50},
+      .velocity = (Vector2d) {140, 0},
       .acceleration = (Vector2d) {0, 0},
     },
     {
       .mass = 1000,
-      .position = (Vector2d) {GetRenderWidth()/2.0, GetRenderHeight()/2.0 - 75},
-      .velocity = (Vector2d) {-140/sqrt(1.5), 0},
+      .position = (Vector2d) {GetRenderWidth()/2.0, GetRenderHeight()/2.0 + 75},
+      .velocity = (Vector2d) {140/sqrt(1.5), 0},
       .acceleration = (Vector2d) {0, 0},
     },
     {
@@ -84,6 +84,12 @@ int main(void) {
       .acceleration = (Vector2d) {0, 0},
     },
     {
+      .mass = 1,
+      .position = (Vector2d) {GetRenderWidth()/2.0, GetRenderHeight()/2.0 + 210},
+      .velocity = (Vector2d) {150/2.0, 0},
+      .acceleration = (Vector2d) {0, 0},
+    },
+    {
       .mass = 1000,
       .position = (Vector2d) {GetRenderWidth()/2.0, GetRenderHeight()/2.0 + 400},
       .velocity = (Vector2d) {140/2.0/sqrtf(2.0), 0},
@@ -99,10 +105,17 @@ int main(void) {
   Vector2d trail[NUM_PARTICLES][TRAIL_LENGTH] = {0};
 
   size_t counter = 0;
+  size_t trail_length = 1;
+  float fps;
   while (!WindowShouldClose()) {
+    fps = GetFPS();
+    if (fps > 500 && trail_length < TRAIL_LENGTH) {
+      TraceLog(LOG_INFO, "Increasing trail length from %zu", trail_length);
+      trail_length += 2;
+    }
     long double dt = GetFrameTime();
 
-    counter = (counter + 1) % TRAIL_LENGTH;
+    counter = (counter + 1) % trail_length;
     for (size_t i=0; i<NUM_PARTICLES; i++) {
       trail[i][counter] = particles[i].position;
     }
@@ -128,7 +141,7 @@ int main(void) {
     // DrawRectangle(0, 0, 100, 20, BLACK);
     DrawFPS(0, 0);
     for (size_t part=0; part<NUM_PARTICLES; part++) {
-      for (size_t i=0; i<TRAIL_LENGTH; i++) {
+      for (size_t i=0; i<trail_length; i++) {
         DrawCircle(trail[part][i].x, trail[part][i].y, 2, GRAY);
         DrawCircle(trail[part][i].x, trail[part][i].y, 2, GRAY);
       }
