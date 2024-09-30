@@ -20,10 +20,10 @@ typedef struct {
   long double mass;
 } Particle;
 
-#define VECTOR3D_SCALE(S, V) (Vector2d) { .x=(S)*(V).x, .y=(S)*(V).y }
-#define VECTOR3D_ADD(A, B)   (Vector2d) { .x=(A).x+(B).x, .y=(A).y+(B).y }
-#define VECTOR3D_DIFF(A, B)  (Vector2d) { .x=(A).x-(B).x, .y=(A).y-(B).y }
-#define VECTOR3D_LENGTH(V)   sqrtf((V).x*(V).x + (V).y*(V).y)
+#define VECTOR2D_SCALE(S, V) (Vector2d) { .x=(S)*(V).x, .y=(S)*(V).y }
+#define VECTOR2D_ADD(A, B)   (Vector2d) { .x=(A).x+(B).x, .y=(A).y+(B).y }
+#define VECTOR2D_DIFF(A, B)  (Vector2d) { .x=(A).x-(B).x, .y=(A).y-(B).y }
+#define VECTOR2D_LENGTH(V)   sqrtf((V).x*(V).x + (V).y*(V).y)
 
 void zero_momentum(Particle *particles, size_t count) {
   long double x_momentum = 0, y_momentum = 0;
@@ -124,16 +124,16 @@ int main(void) {
       particles[i].acceleration = (Vector2d) {0};
       for (size_t j=0; j<NUM_PARTICLES; j++) {
         if (i == j) continue;
-        force_vectors[i][j] = VECTOR3D_DIFF(particles[j].position, particles[i].position);
-        radii[i][j] = VECTOR3D_LENGTH(force_vectors[i][j]);
+        force_vectors[i][j] = VECTOR2D_DIFF(particles[j].position, particles[i].position);
+        radii[i][j] = VECTOR2D_LENGTH(force_vectors[i][j]);
         acceleration_deltas[i] = particles[j].mass / (radii[i][j]*radii[i][j]*radii[i][j]);
-        particles[i].acceleration = VECTOR3D_ADD(particles[i].acceleration, VECTOR3D_SCALE(acceleration_deltas[i], force_vectors[i][j]));
+        particles[i].acceleration = VECTOR2D_ADD(particles[i].acceleration, VECTOR2D_SCALE(acceleration_deltas[i], force_vectors[i][j]));
       }
     }
 
     for (size_t i=0; i<NUM_PARTICLES; i++) {
-      particles[i].velocity = VECTOR3D_ADD(particles[i].velocity, VECTOR3D_SCALE(dt, particles[i].acceleration));
-      particles[i].position = VECTOR3D_ADD(particles[i].position, VECTOR3D_SCALE(dt, particles[i].velocity));
+      particles[i].velocity = VECTOR2D_ADD(particles[i].velocity, VECTOR2D_SCALE(dt, particles[i].acceleration));
+      particles[i].position = VECTOR2D_ADD(particles[i].position, VECTOR2D_SCALE(dt, particles[i].velocity));
     }
 
     BeginDrawing();
